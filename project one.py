@@ -40,7 +40,28 @@ training_labels = training_labels[:20000]
 testing_images = testing_images[:4000]
 testing_labels = testing_labels[:4000]
 #------------------------------------------------------------------------------------------------------------
-
+#------------------------------------------------------------------------------------------------------------
+#هذه العملية هي عملية Deep Learning Model Training حيث اننا ندرب النموذج على الصور ويرد علينا بنتائج مختلفة كل مرة
+#واستخدت هنا خوارزمية Convolutional Neural Network لمعالجة الصور
+model = Sequential()
+model.add(layers.Conv2D(32,(3, 3), activation='relu', input_shape=(32, 32, 3)))
+#طبقة التلافيف اللى تتعرف على الالوان وحواف الصورة
+model.add(layers.MaxPooling2D((2, 2)))
+#هذه اشبه بطبقة تجميع حيث انها تقلل عدد البيانات بس تخلي الحاجات المهمة اللى تحتاجها الالة للتحليل
+model.add(layers.Conv2D(64,(3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3,3), activation='relu'))
+model.add(layers.Flatten())
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(10, activation='softmax'))
+#Dense هي الطبقة اللى تربط هذه الميزات بالمسميات
+model.compile(optimizer = 'adam', loss = 'sparse_categorical_crossentropy', metrics = ['accuracy'])
+model.fit(training_images, training_labels, epochs = 10, validation_data = (testing_images, testing_labels))
+#--------------------------------------------------------------------------------------------------------------
+loss, accuracy = model.evaluate(testing_images, testing_labels)
+print(f"loss: {loss}, accuracy: {accuracy}")
+#اما بالنسبة للصح والخطأ فهذه تظهر النتائج النهائية اللى قدرت الالة انها تجيبها شاملة نسبة الاجابات الصحيحة والخاطئة
+model.save("image_classifier.keras")
 
 model = keras.models.load_model('image_classifier.keras')
 
